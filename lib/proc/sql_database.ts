@@ -150,7 +150,7 @@ export class SqlDatabase implements IRelationalDatabase {
       let promise =
           db.get(
                 'select * from "$rdb_relation" where' +
-                ` tbl="${tableName}" and db=${schema.name}`)
+                ` tbl="${tableName}" and db="${schema.name}"`)
             .then((rows: Object[]) => {
                 if (rows) {
                   let tableSchema =

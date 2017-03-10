@@ -69,8 +69,15 @@ export class Sqlite3DB implements NativeDB {
   public run(origSqls: string[]): Promise<TransactionResults> {
     let resolver = new Resolver<TransactionResults>();
 
-    let sqls = ['begin transaction'].concat(origSqls);
-    sqls.push('commit');
+    let selectOnly = origSqls.every(v => v.startsWith('select'));
+    let sqls: string[];
+    if (selectOnly) {
+      sqls = origSqls;
+    } else {
+      sqls = ['begin transaction'].concat(origSqls);
+      sqls.push('commit');
+    }
+    console.log(sqls);
     let index = 0;
     let result: Object[] = [];
 

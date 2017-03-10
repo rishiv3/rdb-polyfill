@@ -17,7 +17,6 @@
 
 import {DatabaseConnection} from '../../lib/spec/database_connection';
 import {IExecutionContext} from '../../lib/spec/execution_context';
-import {Samples} from './samples';
 
 export class HR {
   static createNewSchema(conn: DatabaseConnection): Promise<void> {
@@ -110,81 +109,5 @@ export class HR {
             .index('idx_begin', 'begin')
     );
     return tx.exec(queries);
-  }
-
-  static SAMPLE_REGIONS = [
-    {id: 'regionId', name: 'dummyRegionName'},
-    {id: 'regionId2', name: 'dummyRegionName2'},
-    {id: 'regionId3', name: 'dummyRegionName3'}
-  ];
-
-  static SAMPLE_COUNTRIES = [
-    {id: 1, name: 'dummyCountryName', region: 'regionId'},
-    {id: 2, name: 'dummyCountryName2', region: 'regionId'}
-  ];
-
-  static SAMPLE_LOCATIONS = [{
-    id: 'locationId',
-    streetAddress: 'dummyStreetAddress',
-    postalCode: 'dummyPostalCode',
-    city: 'dummyCity',
-    stateProvince: 'dummyStateProvince',
-    countryId: 1
-  }];
-
-  static SAMPLE_DEPARTMENTS = Samples.DEPARTMENT_NAMES.map((value, index) => {
-    return {
-      id: 'departmentId' + index.toString(),
-      name: value,
-      managerId: 'managerId',
-      locationId: 'locationId'
-    };
-  });
-
-  private static SALARY_POOL = [100000, 200000, 300000, 400000, 500000, 600000];
-  private static genSalaries(): number[] {
-    let s1 = Math.floor(Math.random() * HR.SALARY_POOL.length);
-    let s2 = Math.floor(Math.random() * HR.SALARY_POOL.length);
-    return [HR.SALARY_POOL[s1], HR.SALARY_POOL[s2]].sort((a, b) => a - b);
-  }
-
-  static SAMPLE_JOBS = Samples.JOB_TITLES.map((value, index) => {
-    let salaries = HR.genSalaries();
-    return {
-      id: 'jobId' + index.toString(),
-      title: value,
-      minSalary: salaries[0],
-      maxSalary: salaries[1]
-    };
-  });
-
-  private static genHireDate(): Date {
-    // Tue Jan 01 1980 10:00:00 GMT-0800 (PST)
-    let min = new Date(315597600000);
-    // Fri Sep 12 2014 13:52:20 GMT-0700 (PDT)
-    let max = new Date(1410555147354);
-
-    let diff = Math.random() * (max.getTime() - min.getTime());
-    return new Date(min.getTime() + diff);
-  }
-
-  static getSampleEmployees(count: number): Object[] {
-    let emp = new Array(count);
-    for (let i = 0; i < count; ++i) {
-      let fnIdx = Math.floor(Math.random() * Samples.FIRST_NAMES.length);
-      let fn = Samples.FIRST_NAMES[fnIdx];
-      let lnIdx = Math.floor(Math.random() * Samples.LAST_NAMES.length);
-      let ln = Samples.LAST_NAMES[lnIdx];
-      emp[i] = {
-        id: 'employeeId' + i.toString(),
-        firstName: fn,
-        lastName: ln,
-        email: `${fn.toLowerCase()}.${ln.toLowerCase()}@theweb.com`,
-        phoneNumber: String(1000000000 + Math.floor(Math.random() * 999999999)),
-        hireDate: HR.genHireDate(),
-        jobId: `jobId${i % Samples.JOB_TITLES.length}`,
-      };
-    }
-    return emp;
   }
 }

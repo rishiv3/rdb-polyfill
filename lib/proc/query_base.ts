@@ -103,7 +103,7 @@ export abstract class QueryBase implements IQuery {
     switch (type) {
       case 'integer':
         return value.toPrecision(1).toString();
-        
+
       case 'number':
         return value.toString();
 
@@ -119,9 +119,12 @@ export abstract class QueryBase implements IQuery {
       case 'object':
         return `"${JSON.stringify(value)}"`;
 
-      default:
+      case 'blob':
         // TODO(arthurhsu): implement blob
-        throw new Error('NotImplemented');
+        return 'NULL';
+
+      default:
+        throw new Error('UnknownError');
     }
   }
 }
