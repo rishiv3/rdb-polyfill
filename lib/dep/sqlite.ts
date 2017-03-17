@@ -47,7 +47,7 @@ export class Sqlite3DB implements NativeDB {
     return resolver.promise;
   }
 
-  public prepare(sql:string): Promise<NativeStatement> {
+  public prepare(sql: string): Promise<NativeStatement> {
     let resolver = new Resolver<Sqlite3Stmt>();
     let nativeStmt = this.db.prepare(sql, err => {
       if (err !== null) {
@@ -136,8 +136,7 @@ export class Sqlite3DB implements NativeDB {
 }
 
 export class Sqlite3Stmt implements NativeStatement {
-  constructor(readonly sql: string, readonly stmt: Statement) {
-  }
+  constructor(readonly sql: string, readonly stmt: Statement) {}
 
   private relay(fn: Function, params: any[]): Promise<void> {
     let resolver = new Resolver<void>();

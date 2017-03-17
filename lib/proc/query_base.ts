@@ -103,7 +103,7 @@ export abstract class QueryBase implements IQuery {
     switch (type) {
       case 'integer':
         return value.toPrecision(1).toString();
-        
+
       case 'number':
         return value.toString();
 
