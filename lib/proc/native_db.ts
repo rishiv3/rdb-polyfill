@@ -16,12 +16,14 @@
  */
 
 import {TransactionResults} from '../spec/execution_context';
+import {NativeStatement} from './native_statement';
 
 export interface NativeDB {
   close(): Promise<Error>;
   get(sql: string): Promise<TransactionResults>;
   run(originalSqls: string[]): Promise<TransactionResults>;
   exec(sql: string): Promise<void>;
+  prepare(sql: string): Promise<NativeStatement>;
   supportTransactionalSchemaChange(): boolean;
   getAutoIncrementKeyword(): string;
   toggleForeignKeyCheckSql(mode: boolean): string;

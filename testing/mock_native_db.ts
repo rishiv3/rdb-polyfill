@@ -16,6 +16,7 @@
  */
 
 import {NativeDB} from '../lib/proc/native_db';
+import {NativeStatement} from '../lib/proc/native_statement';
 import {TransactionResults} from '../lib/spec/execution_context';
 
 export class MockNativeDB implements NativeDB {
@@ -27,6 +28,10 @@ export class MockNativeDB implements NativeDB {
   public constructor() {
     this.sqls = [];
     this.supportTransactionalDDL = true;
+  }
+
+  public prepare(): Promise<NativeStatement> {
+    throw new Error('NotImplemented');
   }
 
   public clear() {

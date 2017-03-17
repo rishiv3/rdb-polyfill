@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-import {Database} from 'sqlite3';
+import {Database, Statement} from 'sqlite3';
 import {Resolver} from '../base/resolver';
 import {NativeDB} from '../proc/native_db';
+import {NativeStatement} from '../proc/native_statement';
 import {TransactionResults} from '../spec/execution_context';
 
 /* tslint:disable */
@@ -43,6 +44,18 @@ export class Sqlite3DB implements NativeDB {
   public close(): Promise<Error> {
     let resolver = new Resolver<Error>();
     this.db.close(err => resolver.resolve(err));
+    return resolver.promise;
+  }
+
+  public prepare(sql:string): Promise<NativeStatement> {
+    let resolver = new Resolver<Sqlite3Stmt>();
+    let nativeStmt = this.db.prepare(sql, err => {
+      if (err !== null) {
+        resolver.reject(err);
+      } else {
+        resolver.resolve(new Sqlite3Stmt(sql, nativeStmt));
+      }
+    });
     return resolver.promise;
   }
 
@@ -119,5 +132,50 @@ export class Sqlite3DB implements NativeDB {
 
   public toggleForeignKeyCheckSql(mode: boolean): string {
     return Sqlite3DB.toggleForeignKeyCheckSql + (mode ? '1' : '0');
+  }
+}
+
+export class Sqlite3Stmt implements NativeStatement {
+  constructor(readonly sql: string, readonly stmt: Statement) {
+  }
+
+  private relay(fn: Function, params: any[]): Promise<void> {
+    let resolver = new Resolver<void>();
+    fn.call(this.stmt, params, (err: any) => {
+      if (err !== null) {
+        resolver.reject(err);
+      } else {
+        resolver.resolve();
+      }
+    });
+    return resolver.promise;
+  }
+
+  public bind(...values: any[]): Promise<void> {
+    return this.relay(this.stmt.bind, values);
+  }
+
+  public reset(): Promise<void> {
+    return this.relay(this.stmt.reset, undefined);
+  }
+
+  public finalize(): Promise<void> {
+    return this.relay(this.stmt.finalize, undefined);
+  }
+
+  public run(): Promise<void> {
+    return this.relay(this.stmt.run, undefined);
+  }
+
+  public get(): Promise<Object[]> {
+    let resolver = new Resolver<Object[]>();
+    this.stmt.all((err: any, rows: any[]) => {
+      if (err) {
+        resolver.reject(err);
+      } else {
+        resolver.resolve(rows as Object[]);
+      }
+    });
+    return resolver.promise;
   }
 }
